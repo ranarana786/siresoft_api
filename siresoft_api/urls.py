@@ -25,6 +25,7 @@ from drf_spectacular.views import (
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/', include('blogs.urls')),
     path('api/users', UserListAPIView.as_view(), name='user-list'),
      path('api/me/', ProfileRetrieveUpdateAPIView.as_view(), name='user-profile'),
     path('api/users/', include('authentication.urls')),

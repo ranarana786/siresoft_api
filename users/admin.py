@@ -31,3 +31,14 @@ class UserAdmin(BaseUserAdmin):
             "fields": ("email", "password1", "password2", "is_active", "is_staff"),
         }),
     )
+
+from django.contrib import admin
+from .models import Profile
+
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'location', 'bio')  
+    search_fields = ('user__email', 'location', 'bio')  
+    list_filter = ('location',) 
+    readonly_fields = ('user',)
+    

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from .models import Profile
 
 User = get_user_model()
 
@@ -28,3 +29,10 @@ class UserDetailSerializer(serializers.ModelSerializer):
             "date_joined",
         ]
         read_only_fields = fields
+
+# profile serializer        
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ['bio', 'avatar', 'location']
+        read_only_fields = []        

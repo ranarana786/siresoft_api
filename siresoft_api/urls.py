@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from users.views import UserListAPIView
+from users.views import UserListAPIView, ProfileRetrieveUpdateAPIView
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularSwaggerView,
@@ -26,6 +26,7 @@ from drf_spectacular.views import (
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/users', UserListAPIView.as_view(), name='user-list'),
+     path('api/me/', ProfileRetrieveUpdateAPIView.as_view(), name='user-profile'),
     path('api/users/', include('authentication.urls')),
     
     # Schema

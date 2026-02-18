@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.utils import timezone
+from django.contrib.auth import get_user_model
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 import uuid
 
 class UserManager(BaseUserManager):
@@ -62,3 +65,22 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     def get_full_name(self):
         return f"{self.first_name} {self.last_name}".strip()
+
+# Profile model    
+User = get_user_model()
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    bio = models.TextField(blank=True)
+    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    location = models.CharField(max_length=255, blank=True)
+
+    def __str__(self):
+        return f"{self.user.email} Profile"
+
+# Auto-create or update Profile when User is saved
+@receiver(post_save, sender=User)
+def create_or_update_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+    else:
+        instance.profile.save()

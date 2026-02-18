@@ -178,7 +178,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'My Project API',
+    'TITLE': 'SireSoft API',
     'DESCRIPTION': 'API documentation for my project',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,

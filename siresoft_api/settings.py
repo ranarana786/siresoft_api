@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 from datetime import timedelta
 
@@ -44,8 +45,10 @@ THIRD_PARTY_APPS = [
     'corsheaders',
     'rest_framework',
     'drf_spectacular',
+    'django_extensions',
     'rest_framework_simplejwt',
-    'rest_framework_simplejwt.token_blacklist',  
+    'rest_framework_simplejwt.token_blacklist',
+      
 ]
 
 LOCAL_APPS = [
@@ -53,6 +56,8 @@ LOCAL_APPS = [
     'users',
     'blogs',
     'authentication',
+    'service',
+    'plans',
     
 ]
 
@@ -157,6 +162,11 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # React dev server
+]
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
@@ -173,6 +183,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

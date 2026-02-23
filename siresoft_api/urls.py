@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from users.views import UserListAPIView, ProfileRetrieveUpdateAPIView
 from drf_spectacular.views import (
     SpectacularAPIView,
@@ -25,17 +27,25 @@ from drf_spectacular.views import (
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
     path('api/', include('blogs.urls')),
-    path('api/users', UserListAPIView.as_view(), name='user-list'),
-     path('api/me/', ProfileRetrieveUpdateAPIView.as_view(), name='user-profile'),
-    path('api/users/', include('authentication.urls')),
+    path('api/service/', include('service.urls')),
+    path('api/plan/', include('plans.urls')),
     
+
+    path('api/users', UserListAPIView.as_view(), name='user-list'),
+    path('api/me/', ProfileRetrieveUpdateAPIView.as_view(), name='user-profile'),
+    path('api/users/', include('authentication.urls')),
+
     # Schema
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
 
-    # Swagger UI
+    # Swagger
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 
-    # Redoc UI
+    # Redoc
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

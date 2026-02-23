@@ -7,15 +7,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         categories = [
-            "Website Design",
-            "Custom Relation Management",
-            "Web Hosting",
-            "Logo Design",
-            "Business Email",
-            "Website Analytics",
-            "SEO Tools",
-            "ETL",
-            "Inventory Control"
+            "web and infrastructure",
+            "Design and Branding",
+            "Marketing and analytics",
+            "Business Management System",
+            "Data and Integrations"
         ]
 
         for index, name in enumerate(categories, start=1):

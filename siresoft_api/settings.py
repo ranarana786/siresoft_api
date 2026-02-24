@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-k0t^s7_k53roke11dv3l4+e+2v^_lsyzj#r)x47#u3p9bqvr4e
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -135,8 +135,12 @@ WSGI_APPLICATION = 'siresoft_api.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'siresoft',
+        'USER': 'siresoft_admin',
+        'PASSWORD': 'siresoft2468',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
@@ -183,6 +187,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

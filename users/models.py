@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.core.validators import RegexValidator
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
@@ -34,10 +35,19 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     """Custom User model with email as username field"""
     
+    phone_validator = RegexValidator(
+    regex=r'^\+?\d{7,15}$',
+    message="Enter a valid phone number (7–15 digits, optional + sign)."
+)
+    
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(unique=True, max_length=255, db_index=True, blank=False)
     first_name = models.CharField(max_length=150, blank=False)
     last_name = models.CharField(max_length=150, blank=False)
+    phone = models.CharField(
+        max_length=16,
+        validators=[phone_validator],
+    )
     
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -70,9 +80,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 User = get_user_model()
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    bio = models.TextField(blank=True)
-    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
-    location = models.CharField(max_length=255, blank=True)
+    # bio = models.TextField(blank=True)
+    # avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    # country = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
         return f"{self.user.email} Profile"
@@ -84,3 +94,19 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
         Profile.objects.create(user=instance)
     else:
         instance.profile.save()
+
+class Address(models.Model):
+    """
+    User address linked with user profile
+    """
+    profile = models.ForeignKey(
+        Profile,
+        on_delete=models.CASCADE,
+        related_name='addresses'
+    )
+
+    address = models.TextField()
+    country = models.CharField(max_length=100, blank=True)
+
+    def __str__(self):
+        return f"{self.profile.user.email} - {self.country}"

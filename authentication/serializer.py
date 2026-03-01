@@ -33,6 +33,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             'email',
             'first_name',
             'last_name',
+            'phone',
             'password',
             'confirm_password',
         ]
@@ -75,6 +76,24 @@ class RegisterSerializer(serializers.ModelSerializer):
     def validate_password(self, value):
         validate_strong_password(value)
         return value
+    
+    def validate_phone(self, value):
+        """
+        validate phone number
+        """
+        phone = value.strip()
+
+        if not phone.isdigit():
+            raise serializers.ValidationError(
+                "Phone number must contain only digits."
+            )
+
+        if len(phone) < 11 or len(phone) > 15:
+            raise serializers.ValidationError(
+                "Phone number must be between 11 and 15 digits."
+            )
+
+        return phone
 
     def validate(self, attrs):
         """
@@ -96,6 +115,7 @@ class RegisterSerializer(serializers.ModelSerializer):
                 password=validated_data['password'],
                 first_name=validated_data.get('first_name', ''),
                 last_name=validated_data.get('last_name', ''),
+                phone = validated_data.get('phone', '')
             )
         except IntegrityError:
             raise serializers.ValidationError({"email": "Email already registered."})

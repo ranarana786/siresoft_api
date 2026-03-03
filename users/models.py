@@ -107,6 +107,9 @@ class Address(models.Model):
 
     address = models.TextField()
     country = models.CharField(max_length=100, blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    state = models.CharField(max_length=100, blank=True)
+    postal_code = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
         return f"{self.profile.user.email} - {self.country}"

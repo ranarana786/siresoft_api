@@ -58,6 +58,7 @@ LOCAL_APPS = [
     'authentication',
     'service',
     'plans',
+    'support_message',
     
 ]
 
@@ -170,6 +171,15 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # React dev server
 ]
 
+# Email setup
+EMAIL_BACKEND   = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST      = "smtp.gmail.com"
+EMAIL_PORT      = 587
+EMAIL_USE_TLS   = True
+
+EMAIL_HOST_USER     = "mixterraj456@gmail.com"      # e.g. yourapp@gmail.com
+EMAIL_HOST_PASSWORD = "drlb ylkn dplv yxua"  # 16-char App Password
+DEFAULT_FROM_EMAIL  = "mixterraj456@gmail.com"
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/

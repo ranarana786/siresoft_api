@@ -1,9 +1,8 @@
-from rest_framework import generics
+from rest_framework import generics, status
+from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from django.contrib.auth import get_user_model
 from .serializers import UserListSerializer
-from rest_framework import generics, permissions
-from .models import Profile
 from .serializers import ProfileSerializer, CurrentUserSerializer
 from drf_spectacular.utils import extend_schema
 
@@ -16,11 +15,29 @@ class UserListAPIView(generics.ListAPIView):
     
 class CurrentUserAPIView(generics.RetrieveUpdateAPIView):
     serializer_class = CurrentUserSerializer
-    # permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
-        # request.user ko return kar raha hai
-        return self.request.user    
+        return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        if not serializer.is_valid():
+            return Response({
+                "success": False,
+                "message": "Validation failed",
+                "errors": serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        self.perform_update(serializer)
+
+        # ✅ Custom response, serializer data not returned
+        return Response({
+            "success": True,
+            "message": "Profile updated successfully",
+            "errors": None
+        }, status=status.HTTP_200_OK) 
 
 
 class ProfileRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):

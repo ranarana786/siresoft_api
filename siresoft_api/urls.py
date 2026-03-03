@@ -27,12 +27,21 @@ from drf_spectacular.views import (
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-
+    
+    # blogs api
     path('api/', include('blogs.urls')),
+    
+    # Service and Plans 
     path('api/service/', include('service.urls')),
     path('api/plan/', include('plans.urls')),
     
-
+    # contact
+    path('api/contacts/', include('core.urls')),
+    path('api/contacts/supports/', include('support_message.urls')),
+    
+    
+    
+    #  User register login profile and get user
     path('api/users', UserListAPIView.as_view(), name='user-list'),
     path("api/user/", CurrentUserAPIView.as_view() , name="current-user"),
     path('api/me/', CurrentUserAPIView.as_view(), name='user-profile'),

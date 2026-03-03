@@ -48,13 +48,14 @@ class ServiceCategory(TimestampedModel):
         verbose_name=_("Description"),
         help_text=_("Brief description of this category")
     )
-    icon = models.CharField(
-        max_length=50,
-        blank=True,
-        null=True,
-        verbose_name=_("Icon Class"),
-        help_text=_("CSS icon class (e.g., 'fa-code', 'bi-palette')")
-    )
+    
+    icon = models.ImageField(
+    upload_to="service_icons/",
+    blank=True,
+    null=True,
+    verbose_name=_("Service Icon"),
+    help_text=_("Upload service icon image (PNG, SVG, JPG)")
+)
     display_order = models.PositiveIntegerField(
         default=0,
         verbose_name=_("Display Order"),
@@ -162,12 +163,12 @@ class Service(TimestampedModel):
     )
 
     # Visual Elements
-    icon = models.CharField(
-        max_length=50,
-        blank=True,
-        null=True,
-        verbose_name=_("Icon Class"),
-        help_text=_("CSS icon class for this service")
+    icon = models.ImageField(
+    upload_to="service_icons/",
+    blank=True,
+    null=True,
+    verbose_name=_("Service Icon"),
+    help_text=_("Upload service icon image (PNG, SVG, JPG)") 
     )
     thumbnail = models.ImageField(
         upload_to='services/thumbnails/%Y/%m/',

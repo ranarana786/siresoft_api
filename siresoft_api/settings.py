@@ -59,6 +59,7 @@ LOCAL_APPS = [
     'service',
     'plans',
     'support_message',
+    'products'
     
 ]
 

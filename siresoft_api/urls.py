@@ -36,6 +36,9 @@ urlpatterns = [
     path('api/service/', include('service.urls')),
     path('api/plan/', include('plans.urls')),
     
+    #products
+    path('api/products/', include('products.urls')),
+    
     # contact
     path('api/contacts/', include('core.urls')),
     path('api/contacts/supports/', include('support_message.urls')),

@@ -5,7 +5,7 @@ Django Admin Configuration for Pricing Plans
 
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import PricingPlan, PlanFeature
+from .models import PricingPlan, PlanFeature, PlanComparison, PlanComparisonValue
 
 
 class PlanFeatureInline(admin.TabularInline):
@@ -100,3 +100,32 @@ class PlanFeatureAdmin(admin.ModelAdmin):
             '<span style="color: #e74c3c; font-size: 16px;">✗</span> Not Included'
         )
     is_included_display.short_description = 'Status'
+
+@admin.register(PlanComparison)
+class PlanComparisonAdmin(admin.ModelAdmin):
+    """
+    Admin interface for Plan Comparison Features
+    """
+    list_display = ['name', 'category', 'order', 'is_active']
+    list_filter = ['category', 'is_active']
+    search_fields = ['name', 'description']
+    ordering = ['order', 'name']
+
+
+@admin.register(PlanComparisonValue)
+class PlanComparisonValueAdmin(admin.ModelAdmin):
+    """
+    Admin interface for Plan Comparison Values
+    """
+    list_display = ['comparison_feature', 'plan', 'value', 'is_available']
+    list_filter = ['is_available', 'plan__plan_type']
+    search_fields = ['comparison_feature__name', 'plan__name']
+    autocomplete_fields = ['comparison_feature', 'plan']
+
+
+# Custom Admin Site Customization
+admin.site.site_header = "SireSoft Pricing Management"
+admin.site.site_title = "SireSoft Admin"
+admin.site.index_title = "Pricing Plans Administration"
+
+    

@@ -8,6 +8,7 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.text import slugify
 from decimal import Decimal
+from service.models import Service
 
 
 class PricingPlan(models.Model):
@@ -88,3 +89,58 @@ class PlanFeature(models.Model):
     def __str__(self):
         status = "✓" if self.is_included else "✗"
         return f"{status} {self.name} ({self.plan.name})"
+    
+class PlanComparison(models.Model):
+    """
+    Store comparison features for displaying plan comparison tables
+    """
+    service = models.ForeignKey(
+        Service,
+        on_delete=models.CASCADE,
+        related_name="comparison_features",
+        null=True,
+        blank=True
+)
+    name = models.CharField(max_length=200)
+    category = models.CharField(max_length=100, blank=True)
+    description = models.TextField(blank=True)
+    order = models.IntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Plan Comparison Feature"
+        verbose_name_plural = "Plan Comparison Features"
+        ordering = ['order', 'name']
+
+    def __str__(self):
+        return self.name
+
+
+class PlanComparisonValue(models.Model):
+    """
+    Values for comparison features across different plans
+    """
+    comparison_feature = models.ForeignKey(
+        PlanComparison,
+        on_delete=models.CASCADE,
+        related_name='values'
+    )
+    plan = models.ForeignKey(
+        PricingPlan,
+        on_delete=models.CASCADE,
+        related_name='comparison_values'
+    )
+    value = models.CharField(max_length=200)
+    is_available = models.BooleanField(default=True)
+    
+    class Meta:
+        verbose_name = "Plan Comparison Value"
+        verbose_name_plural = "Plan Comparison Values"
+        unique_together = [['comparison_feature', 'plan']]
+
+    def __str__(self):
+        return f"{self.plan.name} - {self.comparison_feature.name}: {self.value}"
+    

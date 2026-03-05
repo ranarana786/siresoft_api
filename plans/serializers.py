@@ -4,7 +4,7 @@ Serializers for Pricing Plans API
 """
 
 from rest_framework import serializers
-from .models import PricingPlan, PlanFeature
+from .models import PricingPlan, PlanFeature, PlanComparisonValue, PlanComparison
 
 
 class PlanFeatureSerializer(serializers.ModelSerializer):
@@ -68,3 +68,33 @@ class PricingPlanListSerializer(serializers.ModelSerializer):
     def get_features_count(self, obj):
         """Count of included features"""
         return obj.features.filter(is_included=True).count()
+    
+class PlanComparisonValueSerializer(serializers.ModelSerializer):
+    plan_id = serializers.IntegerField(source="plan.id", read_only=True)
+    plan_name = serializers.CharField(source="plan.name", read_only=True)
+
+    class Meta:
+        model = PlanComparisonValue
+        fields = [
+            "id",
+            "plan_id",
+            "plan_name",
+            "value",
+            "is_available",
+        ]
+        
+class PlanComparisonSerializer(serializers.ModelSerializer):
+    values = PlanComparisonValueSerializer(many=True, read_only=True)
+    service_name = serializers.CharField(source='service.name', read_only=True)
+
+    class Meta:
+        model = PlanComparison
+        fields = [
+            "id",
+            "name",
+            "category",
+            "description",
+            "order",
+            "service_name",
+            "values",   # 👈 important for table
+        ]        

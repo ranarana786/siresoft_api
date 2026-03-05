@@ -24,6 +24,7 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
     SpectacularRedocView,
 )
+from plans.views import PlanComparisonTableView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -39,13 +40,18 @@ urlpatterns = [
     path('api/contacts/', include('core.urls')),
     path('api/contacts/supports/', include('support_message.urls')),
     
-    
-    
     #  User register login profile and get user
     path('api/users', UserListAPIView.as_view(), name='user-list'),
     path("api/user/", CurrentUserAPIView.as_view() , name="current-user"),
     path('api/me/', CurrentUserAPIView.as_view(), name='user-profile'),
     path('api/users/', include('authentication.urls')),
+    
+    # Plan Comparison table
+     path(
+        "api/plan_comparison_table/",
+        PlanComparisonTableView.as_view(),
+        name="plan-comparison-table",
+    ),
 
     # Schema
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),

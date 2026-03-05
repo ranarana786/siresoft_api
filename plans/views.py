@@ -1,15 +1,20 @@
+from collections import defaultdict
+
 from django.shortcuts import render
 from rest_framework import viewsets, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.generics import ListAPIView
+from django.db.models import Prefetch
 
-from .models import PricingPlan, PlanFeature
+from .models import (PricingPlan, PlanFeature, 
+                     PlanComparison, PlanComparisonValue)
 from .serializers import (
     PricingPlanSerializer,
     PricingPlanListSerializer,
-    PlanFeatureSerializer
+    PlanFeatureSerializer,
+    PlanComparisonSerializer,PlanComparisonValueSerializer
 )
 
 # Create your views here.
@@ -92,7 +97,35 @@ class PricingPlanViewSet(viewsets.ModelViewSet):
         plans = self.get_queryset().filter(is_popular=True)
         serializer = self.get_serializer(plans, many=True)
         return Response(serializer.data)
- 
 
-    
-    
+class PlanComparisonTableView(ListAPIView):
+    serializer_class = PlanComparisonSerializer
+
+    def get(self, request):
+        queryset = (
+            PlanComparison.objects
+            .filter(is_active=True)
+            .prefetch_related("values__plan", "service")
+            .order_by("order")
+        )
+
+        serializer = PlanComparisonSerializer(queryset, many=True)
+        data = serializer.data
+
+        grouped = defaultdict(list)
+
+        for item in data:
+            service_name = item.pop("service_name")
+            
+            # convert values list to plan-wise format
+            formatted_values = []
+            for v in item["values"]:
+                formatted_values.append({
+                    "plan": v["plan_name"].lower(),
+                    "value": v["value"]
+                })
+
+            item["values"] = formatted_values
+            grouped[service_name].append(item)
+
+        return Response(grouped)

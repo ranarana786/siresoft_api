@@ -17,7 +17,7 @@ class ProductAdmin(admin.ModelAdmin):
     # Fieldsets for better organization
     fieldsets = (
         (None, {
-            'fields': ('name', 'slug', 'category', 'description')
+            'fields': ('name', 'slug', 'category', 'short_description', 'description')
         }),
         ('Media', {
             'fields': ('image', 'banner_image', 'gallery_images'),

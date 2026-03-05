@@ -21,7 +21,14 @@ class Product(models.Model):
         verbose_name=_("URL Slug"),
         help_text=_("Auto-generated URL-friendly version of product name")
     )
+    
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
+    
+    short_description = models.CharField(
+        max_length=255,
+        verbose_name=_("Short Description"),
+        help_text=_("Brief one-line description for listings")
+    )
     
     description = models.TextField(
         verbose_name=_("Full Description"),

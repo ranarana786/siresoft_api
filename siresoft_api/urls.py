@@ -49,6 +49,9 @@ urlpatterns = [
     path('api/me/', CurrentUserAPIView.as_view(), name='user-profile'),
     path('api/users/', include('authentication.urls')),
     
+    #cart api
+    path('api/cart/', include('cart.urls')),
+    
     # Plan Comparison table
      path(
         "api/plan_comparison_table/",

@@ -59,7 +59,8 @@ LOCAL_APPS = [
     'service',
     'plans',
     'support_message',
-    'products'
+    'products',
+    'cart'
     
 ]
 
@@ -168,9 +169,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # React dev server
-]
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Email setup
 EMAIL_BACKEND   = "django.core.mail.backends.smtp.EmailBackend"

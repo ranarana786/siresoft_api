@@ -5,23 +5,55 @@ Complete REST API for cart operations
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.db import transaction
 
 from .models import Cart, CartItem
 from .serializers import (
-    CartSerializer, CartItemSerializer, AddToCartSerializer,
+    CartSerializer, 
+    CartItemSerializer, 
+    AddToCartSerializer,
     CartSummarySerializer
 )
 
 
-def get_or_create_cart(request):
-    cart, created = Cart.objects.get_or_create(
-        user=request.user,
-        is_active=True
-    )
-    return cart
+from django.db import transaction
+from django.utils.crypto import get_random_string
 
+def get_or_create_cart(request):
+    """
+    Returns an active cart for the current user.
+    Works for both authenticated and anonymous users.
+    Ensures session is always saved and session_key is never None.
+    """
+
+    # Step 1: Ensure session exists and is saved
+    if not request.session.session_key:
+        request.session.create()  # Create session object
+        request.session.modified = True  # Mark session as modified
+        request.session.save()  # Force save → sets Set-Cookie header
+
+    session_key = request.session.session_key
+
+    # Step 2: Authenticated user cart
+    if request.user.is_authenticated:
+        with transaction.atomic():
+            cart, created = Cart.objects.select_for_update().get_or_create(
+                user=request.user,
+                is_active=True,
+                session_key=None
+            )
+        return cart
+
+    # Step 3: Anonymous user cart
+    with transaction.atomic():
+        cart, created = Cart.objects.select_for_update().get_or_create(
+            session_key=session_key,
+            user=None,
+            is_active=True
+        )
+
+    return cart
 
 class CartViewSet(viewsets.ViewSet):
     """
@@ -35,7 +67,7 @@ class CartViewSet(viewsets.ViewSet):
     - GET    /api/cart/summary/      - Get summary
     - GET    /api/cart/count/        - Get count
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     
     def list(self, request):
         """

@@ -52,6 +52,9 @@ urlpatterns = [
     #cart api
     path('api/cart/', include('cart.urls')),
     
+    #order
+    path('api/order/', include('order.urls')),
+    
     # Plan Comparison table
      path(
         "api/plan_comparison_table/",

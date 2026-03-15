@@ -30,7 +30,7 @@ def send_account_creation_email(user, activation_link):
             fail_silently=False,
         )
         
-        admin_email = settings.ADMIN_EMAIL or settings.EMAIL_HOST_USER
+        admin_email = settings.EMAIL_HOST_USER
         if admin_email:
             send_mail(
                 subject=f"[NEW USER] {user.email} registered",

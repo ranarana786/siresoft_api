@@ -48,9 +48,6 @@ from .serializers import ChangePasswordSerializer
 
 
 class ChangePasswordView(APIView):
-
-    permission_classes = [permissions.IsAuthenticated]
-
     def post(self, request):
 
         serializer = ChangePasswordSerializer(data=request.data)

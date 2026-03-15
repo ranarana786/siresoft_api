@@ -393,14 +393,17 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from django.db import transaction
+from django.conf import settings
 from users.models import User
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
 import string, random
-from .utility.helpers import send_order_confirmation_email
+from .utility.helpers import send_order_confirmation_email, send_account_creation_email
 
 def ensure_session(request):
     """
     Ensure session exists and session_key is never None.
-    Same logic as cart's get_or_create_cart.
     """
     if not request.session.session_key:
         return None
@@ -436,7 +439,6 @@ def get_cart_for_request(request):
 def get_orders_for_request(request):
     """
     Get orders queryset for both anonymous and authenticated users.
-
     - Authenticated  → filter by user
     - Anonymous      → filter by session_key
     """
@@ -458,11 +460,6 @@ def get_orders_for_request(request):
         .prefetch_related('items')
         .order_by('-created_at')
     )
-
-
-# ─────────────────────────────────────────────
-# ORDER VIEWSET
-# ─────────────────────────────────────────────
 
 class OrderViewSet(viewsets.ViewSet):
     """
@@ -529,11 +526,7 @@ class OrderViewSet(viewsets.ViewSet):
         Core logic to create order from active cart.
         Called by both create_order and checkout.
         Works for both anonymous and authenticated users.
-
-        Fixes:
-          - No fake Request object (was bug in checkout)
-          - product_id check instead of hasattr (was bug in item_type)
-          - select_for_update to prevent race conditions
+        select_for_update to prevent race conditions
         """
         session_key = ensure_session(request)
 
@@ -555,7 +548,6 @@ class OrderViewSet(viewsets.ViewSet):
             with transaction.atomic():
                 # Lock cart row to prevent race condition
                 cart = Cart.objects.select_for_update().get(pk=cart.pk)
-
                 subtotal = cart.get_total_price()
                 total = subtotal
 
@@ -684,6 +676,18 @@ class OrderViewSet(viewsets.ViewSet):
                             last_name=last_name,
                             is_active=False  # Account inactive until email verification
                         )
+                        
+                    try:
+                        token = default_token_generator.make_token(user)
+                        uid = urlsafe_base64_encode(force_bytes(user.pk))
+
+                        activation_link = f"{settings.FRONTEND_URL}/change-password/{uid}/{token}/"
+                        send_account_creation_email(user, activation_link)
+                    except Exception as email_error:
+                        print(f"Email sending failed: {str(email_error)}")
+                        
+                       
+                        
             except Exception as e:
                 return Response(
                     {"success": False, "error": f"Failed to create user: {str(e)}"},

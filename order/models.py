@@ -5,7 +5,6 @@ from decimal import Decimal
 
 User = get_user_model()
 
-
 class Order(models.Model):
     """
     Order placed by a user – for services/digital products.
@@ -35,7 +34,6 @@ class Order(models.Model):
         ('bank_transfer', 'Bank Transfer'),
     ]
 
-    # Order identification
     order_number = models.CharField(
         max_length=50,
         unique=True,
@@ -54,18 +52,16 @@ class Order(models.Model):
     max_length=40,
     null=True,
     blank=True,
-    db_index=True,    # Fast lookup for anonymous orders
+    db_index=True, 
     help_text="Anonymous user ka session key — login hone ke baad NULL ho jata hai"
     )
 
-    # Order status
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
         default='pending'
     )
 
-    # Pricing
     subtotal = models.DecimalField(
         max_digits=10,
         decimal_places=2,
@@ -83,7 +79,6 @@ class Order(models.Model):
         validators=[MinValueValidator(Decimal('0.00'))]
     )
 
-    # Payment information
     payment_method = models.CharField(
         max_length=20,
         choices=PAYMENT_METHOD_CHOICES,
@@ -96,15 +91,12 @@ class Order(models.Model):
         default='pending'
     )
 
-    # Additional info
     customer_notes = models.TextField(blank=True)
     admin_notes = models.TextField(blank=True)
-
-    # Timestamps
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     paid_at = models.DateTimeField(null=True, blank=True)
-    # shipped_at removed – not needed
     delivered_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
@@ -125,7 +117,6 @@ class Order(models.Model):
     def save(self, *args, **kwargs):
         if not self.order_number:
             self.order_number = self.generate_order_number()
-        # Automatically ensure total is correct
         self.total = self.calculate_total()
         super().save(*args, **kwargs)
 
@@ -134,7 +125,7 @@ class Order(models.Model):
         from django.utils import timezone
         import secrets
         date_part = timezone.now().strftime('%Y%m%d')
-        rand_part = secrets.token_hex(3).upper()  # 6 characters
+        rand_part = secrets.token_hex(3).upper() 
         return f"ORD-{date_part}-{rand_part}"
 
     def calculate_total(self):
@@ -159,8 +150,7 @@ class OrderItem(models.Model):
         on_delete=models.CASCADE,
         related_name='items'
     )
-
-    # Reference to Product/Service (adjust app names as needed)
+    
     product = models.ForeignKey(
         'products.Product',
         on_delete=models.SET_NULL,
@@ -176,11 +166,9 @@ class OrderItem(models.Model):
         related_name='order_items'
     )
 
-    # Store item details at time of order
     item_name = models.CharField(max_length=255)
     item_type = models.CharField(max_length=20)  # 'product' or 'service'
-
-    # Quantity removed – each line item represents one unit
+    
     unit_price = models.DecimalField(
         max_digits=10,
         decimal_places=2
@@ -192,17 +180,15 @@ class OrderItem(models.Model):
 
     # For services
     custom_requirements = models.TextField(blank=True)
-
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['id']
 
     def __str__(self):
-        return self.item_name   # No quantity to display
+        return self.item_name   
 
     def save(self, *args, **kwargs):
-        # For a single service, total price equals unit price
         self.total_price = self.unit_price
         super().save(*args, **kwargs)
 
@@ -225,7 +211,6 @@ class Payment(models.Model):
         related_name='payments'
     )
 
-    # Payment details
     payment_id = models.CharField(
         max_length=255, 
         unique=True
@@ -273,8 +258,7 @@ class Payment(models.Model):
     )
     
     error_message = models.TextField(blank=True)
-
-    # Timestamps
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     completed_at = models.DateTimeField(null=True, blank=True)
@@ -289,6 +273,7 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"Payment {self.payment_id} for Order {self.order.order_number}"   
+    
 # -------------------OrderStatusHistory---------------------------------
 class OrderStatusHistory(models.Model):
     """

@@ -76,7 +76,6 @@ class PricingPlanViewSet(viewsets.ModelViewSet):
         """
         if self.action in ['list', 'retrieve', 'featured', 'popular']:
             return [AllowAny()]
-        return [IsAdminUser()]
     
     @action(detail=False, methods=['get'])
     def featured(self, request):

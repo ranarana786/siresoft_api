@@ -18,7 +18,12 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from users.views import UserListAPIView, ProfileRetrieveUpdateAPIView, CurrentUserAPIView
+from users.views import (
+    UserListAPIView, 
+    ProfileRetrieveUpdateAPIView, 
+    CurrentUserAPIView,
+    ChangePasswordView
+)
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularSwaggerView,
@@ -46,6 +51,8 @@ urlpatterns = [
     #  User register login profile and get user
     path('api/users', UserListAPIView.as_view(), name='user-list'),
     path("api/user/", CurrentUserAPIView.as_view() , name="current-user"),
+    path("api/user/change-password", ChangePasswordView.as_view() , name="change-password"),
+    
     path('api/me/', CurrentUserAPIView.as_view(), name='user-profile'),
     path('api/users/', include('authentication.urls')),
     

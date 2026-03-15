@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 from datetime import timedelta
+from decouple import config
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -152,11 +154,11 @@ WSGI_APPLICATION = 'siresoft_api.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'siresoft',
-        'USER': 'siresoft_admin',
-        'PASSWORD': 'siresoft2468',
-        'HOST': 'localhost',
-        'PORT': '',
+        "NAME": config("DB_NAME"),
+        "USER": config("DB_USER"),
+        "PASSWORD": config("DB_PASSWORD"),
+        "HOST": config("DB_HOST"),
+        "PORT": config("DB_PORT"),
     }
 }
 
@@ -184,15 +186,18 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Email setup
 EMAIL_BACKEND   = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST      = "smtp.gmail.com"
-EMAIL_PORT      = 587
-EMAIL_USE_TLS   = True
+EMAIL_HOST = config("EMAIL_HOST")
+EMAIL_PORT = config("EMAIL_PORT", cast=int)
+EMAIL_USE_TLS = config("EMAIL_USE_TLS", cast=bool)
 
-EMAIL_HOST_USER     = "mixterraj456@gmail.com"      # e.g. yourapp@gmail.com
-EMAIL_HOST_PASSWORD = "drlb ylkn dplv yxua"  # 16-char App Password
-DEFAULT_FROM_EMAIL  = "mixterraj456@gmail.com"
-SUPPORT_EMAIL = 'support@siresoft.com'
-SITE_URL = 'http://localhost:5137' 
+EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
+
+SUPPORT_EMAIL = config("SUPPORT_EMAIL")
+SITE_URL = config("SITE_URL") 
+
+FRONTEND_URL = "http://localhost:5173/"
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
